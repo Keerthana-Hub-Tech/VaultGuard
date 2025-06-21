@@ -15,7 +15,7 @@ cloudinary.config({
   api_secret: process.env.CLOUD_API_SECRET
 });
 
-// 🔐 Upload and encrypt a file
+//  Upload and encrypt a file
 router.post("/file", upload.single("file"), async (req, res) => {
   const fileBuffer = req.file?.buffer;
   const uid = req.body?.uid;
@@ -54,7 +54,7 @@ router.post("/file", upload.single("file"), async (req, res) => {
   }).end(encrypted);
 });
 
-// 📁 Get all uploaded files for a user
+//  Get all uploaded files for a user
 router.get("/myvault/:uid", async (req, res) => {
   const uid = req.params.uid;
   if (!uid) return res.status(400).json({ error: "Missing UID" });
@@ -64,7 +64,7 @@ router.get("/myvault/:uid", async (req, res) => {
   res.json(files);
 });
 
-// 📥 Download and decrypt a file by ID
+//  Download and decrypt a file by ID
 router.get("/download/:id", async (req, res) => {
   const fileId = req.params.id;
   const db = getDB();
