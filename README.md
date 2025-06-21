@@ -31,10 +31,7 @@ VaultGuard is a simple and secure file vault application built with Node.js, Fir
 ![logout](https://github.com/user-attachments/assets/1074f100-4c35-417d-babb-9b220e71cdc1)
 
 
-## Demo video
 
-Watch a short demo of VaultGuard in action:  
-👉 [View on Google Drive] (https://drive.google.com/file/d/1zsVTNGfG-8i1uYobM4PRj2kr8IGzZKwE/view?usp=drivesdk)
 
 
 
