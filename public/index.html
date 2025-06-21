@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>VaultGuard</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <meta name="color-scheme" content="light dark">
+
+  <style>
+    :root {
+      --bg-main: #f0f4f8;
+      --bg-section: #f3f4f6;
+      --text-color: #000;
+      --button-bg: #2563eb;
+      --button-text: #fff;
+    }
+
+    * {
+      box-sizing: border-box;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      min-height: 100vh;
+      background: var(--bg-main);
+      color: var(--text-color);
+    }
+
+    #sidebar {
+      width: 240px;
+      background: #111827;
+      color: white;
+      display: none;
+      flex-direction: column;
+      padding: 20px;
+      align-items: center;
+    }
+
+    #sidebar h1 {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    .avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+      border: 2px solid #3b82f6;
+    }
+
+    .profile-info {
+      font-size: 13px;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #4b5563;
+      text-align: center;
+    }
+
+    #sidebar button {
+      background: #1f2937;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      margin: 6px 0;
+      cursor: pointer;
+      border-radius: 6px;
+      font-size: 14px;
+      width: 100%;
+      text-align: left;
+    }
+
+    #sidebar button:hover {
+      background: #374151;
+    }
+
+    #main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+    }
+
+    .page-heading {
+      width: 100%;
+      background: var(--button-bg);
+      color: var(--button-text);
+      font-size: 24px;
+      font-weight: bold;
+      padding: 20px;
+      margin-bottom: 30px;
+      text-align: center;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .section {
+      background: var(--bg-section);
+      border-radius: 10px;
+      padding: 30px;
+      width: 100%;
+      max-width: 1000px;
+      display: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    input, button {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      font-size: 14px;
+    }
+
+    button {
+      background-color: var(--button-bg);
+      color: var(--button-text);
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1e40af;
+    }
+
+    .entry {
+  background: var(--bg-section);
+  color: var(--text-color);  /* ✅ Use variable */
+  border: 1px solid #e5e7eb;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+}
+
+
+    .entry a {
+      display: inline-block;
+      margin-top: 6px;
+      text-decoration: none;
+      background: #2563eb;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    #login-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      width: 100%;
+    }
+
+    #login-box {
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    #login-box h2 {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #2563eb;
+    }
+
+    #login-box p {
+      text-align: center;
+      color: #555;
+    }
+
+    #themeToggleBtn {
+      background: #374151;
+      margin-top: 10px;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    @media screen and (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
+      #sidebar {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        padding: 10px;
+      }
+
+      #main {
+        padding: 10px;
+      }
+
+      #sidebar button {
+        width: 48%;
+        margin: 6px 1%;
+      }
+
+      .avatar, .profile-info {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="sidebar">
+    <h1>VaultGuard</h1>
+    <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/9131/9131529.png" alt="Avatar">
+    <div class="profile-info">
+      <div><strong>My Profile</strong></div>
+      <div id="phoneDisplay">+91•••••••••</div>
+    </div>
+    <button onclick="showSection('dashboard', 'Dashboard')">🏠 Dashboard</button>
+    <button onclick="showSection('upload', 'Upload File')">⬆️ Upload File</button>
+    <button onclick="showSection('vault', 'My Vault')">📁 My Vault</button>
+    <button onclick="logout()">🚪 Log Out</button>
+    <button id="themeToggleBtn" onclick="toggleTheme()">🌓 Toggle Theme</button>
+  </div>
+
+  <div id="main">
+    <div class="page-heading" id="pageHeading">Dashboard</div>
+
+    <div class="section active" id="login-section">
+      <div id="login-box">
+        <h2>🔐 VaultGuard</h2>
+        <p>Login securely with your phone number</p>
+        <input type="text" id="phone" placeholder="+91XXXXXXXXXX">
+        <div id="recaptcha-container"></div>
+        <button onclick="sendOTP()">Send OTP</button>
+        <input type="text" id="otp" placeholder="Enter OTP">
+        <button onclick="verifyOTP()">Verify OTP</button>
+        <p id="auth-status"></p>
+      </div>
+    </div>
+
+    <div class="section" id="dashboard">
+      <p>Welcome to <strong>VaultGuard</strong> — your encrypted cloud vault.</p>
+      <ul>
+        <li>🔐 Upload files via the Upload section</li>
+        <li>📁 View & download files in My Vault</li>
+        <li>✅ All files are stored securely with AES encryption</li>
+      </ul>
+    </div>
+
+    <div class="section" id="upload">
+      <form id="uploadForm">
+        <input type="file" name="file" required />
+        <button type="submit">Upload</button>
+      </form>
+      <div id="uploadResult"></div>
+    </div>
+
+    <div class="section" id="vault">
+      <div id="vaultList">Loading...</div>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBCkwK2FbMCeOWcdGCJvdBkwjJaCX1ORC4",
+      authDomain: "vaultguardai.firebaseapp.com",
+      projectId: "vaultguardai",
+      storageBucket: "vaultguardai.appspot.com",
+      messagingSenderId: "920392902620",
+      appId: "1:920392902620:web:949283e597b8b103e31119"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    let confirmationResult, currentUserUID = null, appVerifier;
+
+    window.onload = () => {
+      appVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-container", { size: "invisible" });
+      appVerifier.render(); // 👈 important
+    };
+
+    function sendOTP() {
+      const phone = document.getElementById("phone").value.trim();
+      if (!phone.startsWith("+91")) return alert("Please enter phone in +91XXXXXXXXXX format");
+
+      firebase.auth().signInWithPhoneNumber(phone, appVerifier)
+        .then(result => {
+          confirmationResult = result;
+          alert("✅ OTP sent!");
+        })
+        .catch(error => {
+          alert("❌ Error sending OTP: " + error.message);
+          console.error(error);
+        });
+    }
+
+    function verifyOTP() {
+      const otp = document.getElementById("otp").value.trim();
+      if (!otp || !confirmationResult) return alert("Enter valid OTP");
+
+      confirmationResult.confirm(otp)
+        .then(result => {
+          const user = result.user;
+          currentUserUID = user.uid;
+          document.getElementById("login-section").style.display = "none";
+          document.getElementById("sidebar").style.display = "flex";
+          document.getElementById("main").style.justifyContent = "flex-start";
+          document.getElementById("phoneDisplay").innerText = user.phoneNumber;
+          showSection('dashboard', 'Dashboard');
+          loadVault();
+        })
+        .catch(() => {
+          alert("❌ OTP verification failed.");
+        });
+    }
+
+    function logout() {
+      if (confirm("Are you sure you want to logout?")) {
+        firebase.auth().signOut().then(() => location.reload());
+      }
+    }
+
+    function showSection(id, heading) {
+      document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      const headingBox = document.getElementById("pageHeading");
+      headingBox.style.display = "block";
+      headingBox.textContent = heading;
+      if (id === "vault") loadVault();
+    }
+
+    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      formData.append("uid", currentUserUID);
+
+      try {
+        const res = await fetch("http://localhost:3000/upload/file", {
+          method: "POST",
+          body: formData
+        });
+        const data = await res.json();
+        document.getElementById("uploadResult").innerHTML = `<p>✅ File uploaded successfully.</p>`;
+        loadVault();
+      } catch {
+        document.getElementById("uploadResult").innerHTML = `<p style="color:red;">❌ Upload failed.</p>`;
+      }
+    });
+
+    async function loadVault() {
+      const res = await fetch(`http://localhost:3000/upload/myvault/${currentUserUID}`);
+      const files = await res.json();
+      const vaultList = document.getElementById("vaultList");
+
+      if (!Array.isArray(files) || files.length === 0) {
+        vaultList.innerHTML = "<p>No files uploaded yet.</p>";
+        return;
+      }
+
+      vaultList.innerHTML = files.map(entry => {
+        const id = entry._id.$oid || entry._id;
+        return `
+          <div class="entry">
+            <strong>Uploaded:</strong> ${new Date(entry.uploadedAt).toLocaleString()}<br>
+            <a href="http://localhost:3000/upload/download/${id}" target="_blank">⬇️ Download</a>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function toggleTheme() {
+      const dark = document.body.classList.toggle("dark");
+      if (dark) {
+        document.documentElement.style.setProperty('--bg-main', '#111827');
+        document.documentElement.style.setProperty('--bg-section', '#1f2937');
+        document.documentElement.style.setProperty('--text-color', '#f9fafb');
+        document.documentElement.style.setProperty('--button-bg', '#3b82f6');
+        document.documentElement.style.setProperty('--button-text', '#ffffff');
+        document.getElementById("sidebar").style.background = "#0f172a";
+        document.querySelectorAll("#sidebar button").forEach(btn => {
+          btn.style.background = "#1e293b";
+          btn.style.color = "#f9fafb";
+        });
+      } else {
+        document.documentElement.style.setProperty('--bg-main', '#f0f4f8');
+        document.documentElement.style.setProperty('--bg-section', '#f3f4f6');
+        document.documentElement.style.setProperty('--text-color', '#000');
+        document.documentElement.style.setProperty('--button-bg', '#2563eb');
+        document.documentElement.style.setProperty('--button-text', '#fff');
+        document.getElementById("sidebar").style.background = "#111827";
+        document.querySelectorAll("#sidebar button").forEach(btn => {
+          btn.style.background = "#1f2937";
+          btn.style.color = "#ffffff";
+        });
+      }
+    }
+  </script>
+</body>
+</html>
+ 
